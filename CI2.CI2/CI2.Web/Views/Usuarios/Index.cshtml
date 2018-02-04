@@ -1,0 +1,101 @@
+﻿@model IEnumerable<CI2.Persistencia.TabUsuario>
+
+@{
+    
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Usuario</h2>
+
+<p>
+    @Html.ActionLink("Crear usuario", "Create",null,new { @class="btn btn-success" })
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.CorreoConfirmacion)
+        </th>
+        @*<th>
+            @Html.DisplayNameFor(model => model.CorreoConfirmacion)
+        </th>*@
+        @*<th>
+            @Html.DisplayNameFor(model => model.Contrasena)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Seguridad)
+        </th>*@
+        <th>
+            @Html.DisplayNameFor(model => model.Telefono)
+        </th>
+        @*<th>
+            @Html.DisplayNameFor(model => model.TelefonoConfirmacion)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.DosFactoresActivacion)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.FechaUltimoBloqueo)
+        </th>*@
+        <th>
+            @Html.DisplayNameFor(model => model.Bloqueo)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.NumeroIngresosFallidos)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.NombreUsuario)
+        </th>
+        @*<th>
+            @Html.DisplayNameFor(model => model.Discriminator)
+        </th>*@
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.Correo)
+        </td>
+        @*<td>
+            @Html.DisplayFor(modelItem => item.CorreoConfirmacion)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Contrasena)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Seguridad)
+        </td>*@
+        <td>
+            @Html.DisplayFor(modelItem => item.Telefono)
+        </td>
+        @*<td>
+            @Html.DisplayFor(modelItem => item.TelefonoConfirmacion)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.DosFactoresActivacion)
+        </td>*@
+        @*<td>
+            @Html.DisplayFor(modelItem => item.FechaUltimoBloqueo)
+        </td>*@
+        <td>
+            @Html.DisplayFor(modelItem => item.Bloqueo)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.NumeroIngresosFallidos)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.NombreUsuario)
+        </td>
+        @*<td>
+            @Html.DisplayFor(modelItem => item.Discriminator)
+        </td>*@
+        <td>
+@Html.ActionLink("Editar", "Edit", new { id = item.IdUsuario }, new { @class = "btn btn-primary" }) |
+            @Html.ActionLink("Ver Detalle", "Details", new { id=item.IdUsuario }, new { @class = "btn btn-warning" }) |
+            @Html.ActionLink("Eliminar", "Delete", new { id=item.IdUsuario },  new { @class = "btn btn-danger" })
+        </td>
+    </tr>
+}
+
+</table>

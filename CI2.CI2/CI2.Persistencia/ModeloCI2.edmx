@@ -1,0 +1,468 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+      <Schema Namespace="CI2Modelo.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="__MigrationHistory">
+          <Key>
+            <PropertyRef Name="MigrationId" />
+            <PropertyRef Name="ContextKey" />
+          </Key>
+          <Property Name="MigrationId" Type="nvarchar" MaxLength="150" Nullable="false" />
+          <Property Name="ContextKey" Type="nvarchar" MaxLength="300" Nullable="false" />
+          <Property Name="Model" Type="varbinary(max)" Nullable="false" />
+          <Property Name="ProductVersion" Type="nvarchar" MaxLength="32" Nullable="false" />
+        </EntityType>
+        <EntityType Name="TabRol">
+          <Key>
+            <PropertyRef Name="IdRol" />
+          </Key>
+          <Property Name="IdRol" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="NombreRol" Type="nvarchar" MaxLength="256" Nullable="false" />
+        </EntityType>
+        <EntityType Name="TabTareaUsuario">
+          <Key>
+            <PropertyRef Name="IdTarea" />
+          </Key>
+          <Property Name="IdTarea" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="FechaVencimieno" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="Descripcion" Type="varchar(max)" Nullable="false" />
+          <Property Name="Estado" Type="bit" Nullable="false" />
+          <Property Name="FechaCreacion" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="FechaActualizacion" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="IdUsuario" Type="nvarchar" MaxLength="128" Nullable="false" />
+        </EntityType>
+        <EntityType Name="TabUsuario">
+          <Key>
+            <PropertyRef Name="IdUsuario" />
+          </Key>
+          <Property Name="IdUsuario" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="Correo" Type="nvarchar" MaxLength="256" />
+          <Property Name="CorreoConfirmacion" Type="bit" Nullable="false" />
+          <Property Name="Contrasena" Type="nvarchar(max)" />
+          <Property Name="Seguridad" Type="nvarchar(max)" />
+          <Property Name="Telefono" Type="nvarchar(max)" />
+          <Property Name="TelefonoConfirmacion" Type="bit" Nullable="false" />
+          <Property Name="DosFactoresActivacion" Type="bit" Nullable="false" />
+          <Property Name="FechaUltimoBloqueo" Type="datetime" />
+          <Property Name="Bloqueo" Type="bit" Nullable="false" />
+          <Property Name="NumeroIngresosFallidos" Type="int" Nullable="false" />
+          <Property Name="NombreUsuario" Type="nvarchar" MaxLength="256" Nullable="false" />
+          <Property Name="Discriminator" Type="nvarchar" MaxLength="128" Nullable="false" />
+        </EntityType>
+        <EntityType Name="TabUsuarioLogin">
+          <Key>
+            <PropertyRef Name="IdLogin" />
+            <PropertyRef Name="IdLlaveProveedor" />
+            <PropertyRef Name="IdUsuario" />
+          </Key>
+          <Property Name="IdLogin" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="IdLlaveProveedor" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="IdUsuario" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="IdentityUser_Id" Type="nvarchar" MaxLength="128" />
+        </EntityType>
+        <EntityType Name="TabUsuarioReclamo">
+          <Key>
+            <PropertyRef Name="IdUsuarioReclamo" />
+          </Key>
+          <Property Name="IdUsuarioReclamo" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="IdUsuario" Type="nvarchar(max)" />
+          <Property Name="TipoReclamo" Type="nvarchar(max)" />
+          <Property Name="Reclamo" Type="nvarchar(max)" />
+          <Property Name="IdentityUser_Id" Type="nvarchar" MaxLength="128" />
+        </EntityType>
+        <EntityType Name="TabUsuarioRol">
+          <Key>
+            <PropertyRef Name="IdUsuario" />
+            <PropertyRef Name="IdRol" />
+          </Key>
+          <Property Name="IdUsuario" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="IdRol" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="IdentityUser_Id" Type="nvarchar" MaxLength="128" />
+        </EntityType>
+        <Association Name="FK_CI2_TabUsuarioLogin_CI2_TabUsuario_IdentityUser_Id">
+          <End Role="TabUsuario" Type="Self.TabUsuario" Multiplicity="0..1" />
+          <End Role="TabUsuarioLogin" Type="Self.TabUsuarioLogin" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TabUsuario">
+              <PropertyRef Name="IdUsuario" />
+            </Principal>
+            <Dependent Role="TabUsuarioLogin">
+              <PropertyRef Name="IdentityUser_Id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CI2_TabUsuarioReclamo_CI2_TabUsuario_IdentityUser_Id">
+          <End Role="TabUsuario" Type="Self.TabUsuario" Multiplicity="0..1" />
+          <End Role="TabUsuarioReclamo" Type="Self.TabUsuarioReclamo" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TabUsuario">
+              <PropertyRef Name="IdUsuario" />
+            </Principal>
+            <Dependent Role="TabUsuarioReclamo">
+              <PropertyRef Name="IdentityUser_Id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CI2_TabUsuarioRol_CI2_TabRol_IdRol">
+          <End Role="TabRol" Type="Self.TabRol" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="TabUsuarioRol" Type="Self.TabUsuarioRol" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TabRol">
+              <PropertyRef Name="IdRol" />
+            </Principal>
+            <Dependent Role="TabUsuarioRol">
+              <PropertyRef Name="IdRol" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CI2_TabUsuarioRol_CI2_TabUsuario_IdentityUser_Id">
+          <End Role="TabUsuario" Type="Self.TabUsuario" Multiplicity="0..1" />
+          <End Role="TabUsuarioRol" Type="Self.TabUsuarioRol" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TabUsuario">
+              <PropertyRef Name="IdUsuario" />
+            </Principal>
+            <Dependent Role="TabUsuarioRol">
+              <PropertyRef Name="IdentityUser_Id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_TabTareaUsuario_TabUsuario">
+          <End Role="TabUsuario" Type="Self.TabUsuario" Multiplicity="1" />
+          <End Role="TabTareaUsuario" Type="Self.TabTareaUsuario" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TabUsuario">
+              <PropertyRef Name="IdUsuario" />
+            </Principal>
+            <Dependent Role="TabTareaUsuario">
+              <PropertyRef Name="IdUsuario" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="CI2ModeloStoreContainer">
+          <EntitySet Name="__MigrationHistory" EntityType="Self.__MigrationHistory" Schema="CI2" store:Type="Tables" />
+          <EntitySet Name="TabRol" EntityType="Self.TabRol" Schema="CI2" store:Type="Tables" />
+          <EntitySet Name="TabTareaUsuario" EntityType="Self.TabTareaUsuario" Schema="CI2" store:Type="Tables" />
+          <EntitySet Name="TabUsuario" EntityType="Self.TabUsuario" Schema="CI2" store:Type="Tables" />
+          <EntitySet Name="TabUsuarioLogin" EntityType="Self.TabUsuarioLogin" Schema="CI2" store:Type="Tables" />
+          <EntitySet Name="TabUsuarioReclamo" EntityType="Self.TabUsuarioReclamo" Schema="CI2" store:Type="Tables" />
+          <EntitySet Name="TabUsuarioRol" EntityType="Self.TabUsuarioRol" Schema="CI2" store:Type="Tables" />
+          <AssociationSet Name="FK_CI2_TabUsuarioLogin_CI2_TabUsuario_IdentityUser_Id" Association="Self.FK_CI2_TabUsuarioLogin_CI2_TabUsuario_IdentityUser_Id">
+            <End Role="TabUsuario" EntitySet="TabUsuario" />
+            <End Role="TabUsuarioLogin" EntitySet="TabUsuarioLogin" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CI2_TabUsuarioReclamo_CI2_TabUsuario_IdentityUser_Id" Association="Self.FK_CI2_TabUsuarioReclamo_CI2_TabUsuario_IdentityUser_Id">
+            <End Role="TabUsuario" EntitySet="TabUsuario" />
+            <End Role="TabUsuarioReclamo" EntitySet="TabUsuarioReclamo" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CI2_TabUsuarioRol_CI2_TabRol_IdRol" Association="Self.FK_CI2_TabUsuarioRol_CI2_TabRol_IdRol">
+            <End Role="TabRol" EntitySet="TabRol" />
+            <End Role="TabUsuarioRol" EntitySet="TabUsuarioRol" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CI2_TabUsuarioRol_CI2_TabUsuario_IdentityUser_Id" Association="Self.FK_CI2_TabUsuarioRol_CI2_TabUsuario_IdentityUser_Id">
+            <End Role="TabUsuario" EntitySet="TabUsuario" />
+            <End Role="TabUsuarioRol" EntitySet="TabUsuarioRol" />
+          </AssociationSet>
+          <AssociationSet Name="FK_TabTareaUsuario_TabUsuario" Association="Self.FK_TabTareaUsuario_TabUsuario">
+            <End Role="TabUsuario" EntitySet="TabUsuario" />
+            <End Role="TabTareaUsuario" EntitySet="TabTareaUsuario" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="CI2Modelo" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="C__MigrationHistory">
+          <Key>
+            <PropertyRef Name="MigrationId" />
+            <PropertyRef Name="ContextKey" />
+          </Key>
+          <Property Name="MigrationId" Type="String" MaxLength="150" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="ContextKey" Type="String" MaxLength="300" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Model" Type="Binary" MaxLength="Max" FixedLength="false" Nullable="false" />
+          <Property Name="ProductVersion" Type="String" MaxLength="32" FixedLength="false" Unicode="true" Nullable="false" />
+        </EntityType>
+        <EntityType Name="TabRol">
+          <Key>
+            <PropertyRef Name="IdRol" />
+          </Key>
+          <Property Name="IdRol" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="NombreRol" Type="String" MaxLength="256" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="TabUsuarioRol" Relationship="Self.FK_CI2_TabUsuarioRol_CI2_TabRol_IdRol" FromRole="TabRol" ToRole="TabUsuarioRol" />
+        </EntityType>
+        <EntityType Name="TabTareaUsuario">
+          <Key>
+            <PropertyRef Name="IdTarea" />
+          </Key>
+          <Property Name="IdTarea" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="FechaVencimieno" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="Descripcion" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Estado" Type="Boolean" Nullable="false" />
+          <Property Name="FechaCreacion" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="FechaActualizacion" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="IdUsuario" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="TabUsuario" Relationship="Self.FK_TabTareaUsuario_TabUsuario" FromRole="TabTareaUsuario" ToRole="TabUsuario" />
+        </EntityType>
+        <EntityType Name="TabUsuario">
+          <Key>
+            <PropertyRef Name="IdUsuario" />
+          </Key>
+          <Property Name="IdUsuario" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Correo" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="CorreoConfirmacion" Type="Boolean" Nullable="false" />
+          <Property Name="Contrasena" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Seguridad" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Telefono" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="TelefonoConfirmacion" Type="Boolean" Nullable="false" />
+          <Property Name="DosFactoresActivacion" Type="Boolean" Nullable="false" />
+          <Property Name="FechaUltimoBloqueo" Type="DateTime" Precision="3" />
+          <Property Name="Bloqueo" Type="Boolean" Nullable="false" />
+          <Property Name="NumeroIngresosFallidos" Type="Int32" Nullable="false" />
+          <Property Name="NombreUsuario" Type="String" MaxLength="256" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Discriminator" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="TabTareaUsuario" Relationship="Self.FK_TabTareaUsuario_TabUsuario" FromRole="TabUsuario" ToRole="TabTareaUsuario" />
+          <NavigationProperty Name="TabUsuarioLogin" Relationship="Self.FK_CI2_TabUsuarioLogin_CI2_TabUsuario_IdentityUser_Id" FromRole="TabUsuario" ToRole="TabUsuarioLogin" />
+          <NavigationProperty Name="TabUsuarioReclamo" Relationship="Self.FK_CI2_TabUsuarioReclamo_CI2_TabUsuario_IdentityUser_Id" FromRole="TabUsuario" ToRole="TabUsuarioReclamo" />
+          <NavigationProperty Name="TabUsuarioRol" Relationship="Self.FK_CI2_TabUsuarioRol_CI2_TabUsuario_IdentityUser_Id" FromRole="TabUsuario" ToRole="TabUsuarioRol" />
+        </EntityType>
+        <EntityType Name="TabUsuarioLogin">
+          <Key>
+            <PropertyRef Name="IdLogin" />
+            <PropertyRef Name="IdLlaveProveedor" />
+            <PropertyRef Name="IdUsuario" />
+          </Key>
+          <Property Name="IdLogin" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="IdLlaveProveedor" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="IdUsuario" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="IdentityUser_Id" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="TabUsuario" Relationship="Self.FK_CI2_TabUsuarioLogin_CI2_TabUsuario_IdentityUser_Id" FromRole="TabUsuarioLogin" ToRole="TabUsuario" />
+        </EntityType>
+        <EntityType Name="TabUsuarioReclamo">
+          <Key>
+            <PropertyRef Name="IdUsuarioReclamo" />
+          </Key>
+          <Property Name="IdUsuarioReclamo" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="IdUsuario" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="TipoReclamo" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Reclamo" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="IdentityUser_Id" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="TabUsuario" Relationship="Self.FK_CI2_TabUsuarioReclamo_CI2_TabUsuario_IdentityUser_Id" FromRole="TabUsuarioReclamo" ToRole="TabUsuario" />
+        </EntityType>
+        <EntityType Name="TabUsuarioRol">
+          <Key>
+            <PropertyRef Name="IdUsuario" />
+            <PropertyRef Name="IdRol" />
+          </Key>
+          <Property Name="IdUsuario" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="IdRol" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="IdentityUser_Id" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="TabRol" Relationship="Self.FK_CI2_TabUsuarioRol_CI2_TabRol_IdRol" FromRole="TabUsuarioRol" ToRole="TabRol" />
+          <NavigationProperty Name="TabUsuario" Relationship="Self.FK_CI2_TabUsuarioRol_CI2_TabUsuario_IdentityUser_Id" FromRole="TabUsuarioRol" ToRole="TabUsuario" />
+        </EntityType>
+        <Association Name="FK_CI2_TabUsuarioRol_CI2_TabRol_IdRol">
+          <End Role="TabRol" Type="Self.TabRol" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="TabUsuarioRol" Type="Self.TabUsuarioRol" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TabRol">
+              <PropertyRef Name="IdRol" />
+            </Principal>
+            <Dependent Role="TabUsuarioRol">
+              <PropertyRef Name="IdRol" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_TabTareaUsuario_TabUsuario">
+          <End Role="TabUsuario" Type="Self.TabUsuario" Multiplicity="1" />
+          <End Role="TabTareaUsuario" Type="Self.TabTareaUsuario" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TabUsuario">
+              <PropertyRef Name="IdUsuario" />
+            </Principal>
+            <Dependent Role="TabTareaUsuario">
+              <PropertyRef Name="IdUsuario" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CI2_TabUsuarioLogin_CI2_TabUsuario_IdentityUser_Id">
+          <End Role="TabUsuario" Type="Self.TabUsuario" Multiplicity="0..1" />
+          <End Role="TabUsuarioLogin" Type="Self.TabUsuarioLogin" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TabUsuario">
+              <PropertyRef Name="IdUsuario" />
+            </Principal>
+            <Dependent Role="TabUsuarioLogin">
+              <PropertyRef Name="IdentityUser_Id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CI2_TabUsuarioReclamo_CI2_TabUsuario_IdentityUser_Id">
+          <End Role="TabUsuario" Type="Self.TabUsuario" Multiplicity="0..1" />
+          <End Role="TabUsuarioReclamo" Type="Self.TabUsuarioReclamo" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TabUsuario">
+              <PropertyRef Name="IdUsuario" />
+            </Principal>
+            <Dependent Role="TabUsuarioReclamo">
+              <PropertyRef Name="IdentityUser_Id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CI2_TabUsuarioRol_CI2_TabUsuario_IdentityUser_Id">
+          <End Role="TabUsuario" Type="Self.TabUsuario" Multiplicity="0..1" />
+          <End Role="TabUsuarioRol" Type="Self.TabUsuarioRol" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TabUsuario">
+              <PropertyRef Name="IdUsuario" />
+            </Principal>
+            <Dependent Role="TabUsuarioRol">
+              <PropertyRef Name="IdentityUser_Id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="CI2Entities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="C__MigrationHistory" EntityType="Self.C__MigrationHistory" />
+          <EntitySet Name="TabRol" EntityType="Self.TabRol" />
+          <EntitySet Name="TabTareaUsuario" EntityType="Self.TabTareaUsuario" />
+          <EntitySet Name="TabUsuario" EntityType="Self.TabUsuario" />
+          <EntitySet Name="TabUsuarioLogin" EntityType="Self.TabUsuarioLogin" />
+          <EntitySet Name="TabUsuarioReclamo" EntityType="Self.TabUsuarioReclamo" />
+          <EntitySet Name="TabUsuarioRol" EntityType="Self.TabUsuarioRol" />
+          <AssociationSet Name="FK_CI2_TabUsuarioRol_CI2_TabRol_IdRol" Association="Self.FK_CI2_TabUsuarioRol_CI2_TabRol_IdRol">
+            <End Role="TabRol" EntitySet="TabRol" />
+            <End Role="TabUsuarioRol" EntitySet="TabUsuarioRol" />
+          </AssociationSet>
+          <AssociationSet Name="FK_TabTareaUsuario_TabUsuario" Association="Self.FK_TabTareaUsuario_TabUsuario">
+            <End Role="TabUsuario" EntitySet="TabUsuario" />
+            <End Role="TabTareaUsuario" EntitySet="TabTareaUsuario" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CI2_TabUsuarioLogin_CI2_TabUsuario_IdentityUser_Id" Association="Self.FK_CI2_TabUsuarioLogin_CI2_TabUsuario_IdentityUser_Id">
+            <End Role="TabUsuario" EntitySet="TabUsuario" />
+            <End Role="TabUsuarioLogin" EntitySet="TabUsuarioLogin" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CI2_TabUsuarioReclamo_CI2_TabUsuario_IdentityUser_Id" Association="Self.FK_CI2_TabUsuarioReclamo_CI2_TabUsuario_IdentityUser_Id">
+            <End Role="TabUsuario" EntitySet="TabUsuario" />
+            <End Role="TabUsuarioReclamo" EntitySet="TabUsuarioReclamo" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CI2_TabUsuarioRol_CI2_TabUsuario_IdentityUser_Id" Association="Self.FK_CI2_TabUsuarioRol_CI2_TabUsuario_IdentityUser_Id">
+            <End Role="TabUsuario" EntitySet="TabUsuario" />
+            <End Role="TabUsuarioRol" EntitySet="TabUsuarioRol" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="CI2ModeloStoreContainer" CdmEntityContainer="CI2Entities">
+          <EntitySetMapping Name="C__MigrationHistory">
+            <EntityTypeMapping TypeName="CI2Modelo.C__MigrationHistory">
+              <MappingFragment StoreEntitySet="__MigrationHistory">
+                <ScalarProperty Name="MigrationId" ColumnName="MigrationId" />
+                <ScalarProperty Name="ContextKey" ColumnName="ContextKey" />
+                <ScalarProperty Name="Model" ColumnName="Model" />
+                <ScalarProperty Name="ProductVersion" ColumnName="ProductVersion" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="TabRol">
+            <EntityTypeMapping TypeName="CI2Modelo.TabRol">
+              <MappingFragment StoreEntitySet="TabRol">
+                <ScalarProperty Name="IdRol" ColumnName="IdRol" />
+                <ScalarProperty Name="NombreRol" ColumnName="NombreRol" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="TabTareaUsuario">
+            <EntityTypeMapping TypeName="CI2Modelo.TabTareaUsuario">
+              <MappingFragment StoreEntitySet="TabTareaUsuario">
+                <ScalarProperty Name="IdTarea" ColumnName="IdTarea" />
+                <ScalarProperty Name="FechaVencimieno" ColumnName="FechaVencimieno" />
+                <ScalarProperty Name="Descripcion" ColumnName="Descripcion" />
+                <ScalarProperty Name="Estado" ColumnName="Estado" />
+                <ScalarProperty Name="FechaCreacion" ColumnName="FechaCreacion" />
+                <ScalarProperty Name="FechaActualizacion" ColumnName="FechaActualizacion" />
+                <ScalarProperty Name="IdUsuario" ColumnName="IdUsuario" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="TabUsuario">
+            <EntityTypeMapping TypeName="CI2Modelo.TabUsuario">
+              <MappingFragment StoreEntitySet="TabUsuario">
+                <ScalarProperty Name="IdUsuario" ColumnName="IdUsuario" />
+                <ScalarProperty Name="Correo" ColumnName="Correo" />
+                <ScalarProperty Name="CorreoConfirmacion" ColumnName="CorreoConfirmacion" />
+                <ScalarProperty Name="Contrasena" ColumnName="Contrasena" />
+                <ScalarProperty Name="Seguridad" ColumnName="Seguridad" />
+                <ScalarProperty Name="Telefono" ColumnName="Telefono" />
+                <ScalarProperty Name="TelefonoConfirmacion" ColumnName="TelefonoConfirmacion" />
+                <ScalarProperty Name="DosFactoresActivacion" ColumnName="DosFactoresActivacion" />
+                <ScalarProperty Name="FechaUltimoBloqueo" ColumnName="FechaUltimoBloqueo" />
+                <ScalarProperty Name="Bloqueo" ColumnName="Bloqueo" />
+                <ScalarProperty Name="NumeroIngresosFallidos" ColumnName="NumeroIngresosFallidos" />
+                <ScalarProperty Name="NombreUsuario" ColumnName="NombreUsuario" />
+                <ScalarProperty Name="Discriminator" ColumnName="Discriminator" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="TabUsuarioLogin">
+            <EntityTypeMapping TypeName="CI2Modelo.TabUsuarioLogin">
+              <MappingFragment StoreEntitySet="TabUsuarioLogin">
+                <ScalarProperty Name="IdLogin" ColumnName="IdLogin" />
+                <ScalarProperty Name="IdLlaveProveedor" ColumnName="IdLlaveProveedor" />
+                <ScalarProperty Name="IdUsuario" ColumnName="IdUsuario" />
+                <ScalarProperty Name="IdentityUser_Id" ColumnName="IdentityUser_Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="TabUsuarioReclamo">
+            <EntityTypeMapping TypeName="CI2Modelo.TabUsuarioReclamo">
+              <MappingFragment StoreEntitySet="TabUsuarioReclamo">
+                <ScalarProperty Name="IdUsuarioReclamo" ColumnName="IdUsuarioReclamo" />
+                <ScalarProperty Name="IdUsuario" ColumnName="IdUsuario" />
+                <ScalarProperty Name="TipoReclamo" ColumnName="TipoReclamo" />
+                <ScalarProperty Name="Reclamo" ColumnName="Reclamo" />
+                <ScalarProperty Name="IdentityUser_Id" ColumnName="IdentityUser_Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="TabUsuarioRol">
+            <EntityTypeMapping TypeName="CI2Modelo.TabUsuarioRol">
+              <MappingFragment StoreEntitySet="TabUsuarioRol">
+                <ScalarProperty Name="IdUsuario" ColumnName="IdUsuario" />
+                <ScalarProperty Name="IdRol" ColumnName="IdRol" />
+                <ScalarProperty Name="IdentityUser_Id" ColumnName="IdentityUser_Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="false" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="Ninguno" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="80d19c8d7ad84a3292e34a7d93fb2f6b" Name="Diagram1">
+        <EntityTypeShape EntityType="CI2Modelo.C__MigrationHistory" Width="1.5" PointX="5.75" PointY="1.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="CI2Modelo.TabRol" Width="1.5" PointX="3.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CI2Modelo.TabTareaUsuario" Width="1.5" PointX="3" PointY="3.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="CI2Modelo.TabUsuario" Width="1.5" PointX="0.75" PointY="5.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="CI2Modelo.TabUsuarioLogin" Width="1.5" PointX="3" PointY="6.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CI2Modelo.TabUsuarioReclamo" Width="1.5" PointX="3" PointY="9.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="CI2Modelo.TabUsuarioRol" Width="1.5" PointX="6" PointY="6.5" IsExpanded="true" />
+        <AssociationConnector Association="CI2Modelo.FK_CI2_TabUsuarioRol_CI2_TabRol_IdRol" ManuallyRouted="false" />
+        <AssociationConnector Association="CI2Modelo.FK_TabTareaUsuario_TabUsuario" ManuallyRouted="false" />
+        <AssociationConnector Association="CI2Modelo.FK_CI2_TabUsuarioLogin_CI2_TabUsuario_IdentityUser_Id" ManuallyRouted="false" />
+        <AssociationConnector Association="CI2Modelo.FK_CI2_TabUsuarioReclamo_CI2_TabUsuario_IdentityUser_Id" ManuallyRouted="false" />
+        <AssociationConnector Association="CI2Modelo.FK_CI2_TabUsuarioRol_CI2_TabUsuario_IdentityUser_Id" ManuallyRouted="false" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>
