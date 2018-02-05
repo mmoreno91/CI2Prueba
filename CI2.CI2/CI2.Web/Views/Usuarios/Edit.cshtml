@@ -76,7 +76,7 @@
             @Html.LabelFor(model => model.IdRol, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
                 <div class="checkbox">
-                    @Html.DropDownList("IdRol", null, "Seleccionar el rol", new { @class = "form-control" })
+                    @Html.DropDownList("IdRol", null, new { @class = "form-control" })
                     @Html.ValidationMessageFor(model => model.IdRol, "", new { @class = "text-danger" })
                 </div>
             </div>

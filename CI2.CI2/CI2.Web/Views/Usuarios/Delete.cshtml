@@ -9,9 +9,10 @@
 
 <h3>¿Seguro desea eliminar este registro?</h3>
 <div>
-    <h4>TabUsuario</h4>
+    <h4>Usuario</h4>
     <hr />
     <dl class="dl-horizontal">
+        @Html.HiddenFor(model => model.IdUsuario)
         <dt>
             @Html.DisplayNameFor(model => model.NombreUsuario)
         </dt>

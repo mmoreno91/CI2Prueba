@@ -19,17 +19,19 @@ using CI2.Web.Models;
 
 namespace CI2.Web.Controllers
 {
+    /// <summary>
+    /// Controlador del sevicio web expuesto en CI2
+    /// </summary>
     [Authorize]
     [RoutePrefix("api/tareas")]
     public class TareasController : ApiController
     {
         private CI2Entities db = new CI2Entities();
         /// <summary>
-        /// Ejemplo 
+        /// Permite consultar las tareas de un usuario del sistema
         /// </summary>
-        /// <param name="parametros">parametro</param>
-        /// <returns>parametro</returns>
-        // GET: api/Tareas
+        /// <param name="parametros">Recibe argumentos de tipo ConsultaParametrosViewMode:l string Usuario, int Estado, string ordenar</param>
+        /// <returns>Devuelve un objeto de tipo ConsultaResultadoViewModel: Int64 IdTarea, string Descripcion, DateTime FechaVencimiento, bool Estado, DateTime FechaCreacion, DateTime FechaActualizacion,string IdUsuario </returns>
         [HttpGet]
         [Route("consultar")]
         public IEnumerable<ConsultaResultadoViewModel> Consultar([FromUri]ConsultaParametrosViewModel parametros)
@@ -39,7 +41,6 @@ namespace CI2.Web.Controllers
             IQueryable<TabTareaUsuario> consulta = null;
             try
             {
-                //var nombreUsuarioActual = User.Identity.Name;
                 if (string.IsNullOrWhiteSpace(parametros.Usuario))
                 {
                     consulta = db.TabTareaUsuario;
@@ -48,7 +49,6 @@ namespace CI2.Web.Controllers
                 {
                     consulta = db.TabTareaUsuario.Where(item => item.IdUsuario == parametros.Usuario);
                 }
-
                 switch (parametros.Estado)
                 {
                     case Estados.finalizada:
@@ -62,7 +62,6 @@ namespace CI2.Web.Controllers
                     default:
                         break;
                 }
-
                 switch (parametros.Ordenar)
                 {
                     case Ordenar.ascendente:
@@ -96,10 +95,6 @@ namespace CI2.Web.Controllers
                 string IdUsuario = "";
                 if (ModelState.IsValid)
                 {
-                    //    TabTareaUsuario tareaUsuario = new TabTareaUsuario()
-                    //    {
-                    //        Descripcion = parametros.Descripcion;
-                    //};
                     var nombreUsuarioActual = User.Identity.Name;
                     if (nombreUsuarioActual != null)
                     {
@@ -108,10 +103,24 @@ namespace CI2.Web.Controllers
                         {
                             TabTareaUsuario tareaUsuario = new TabTareaUsuario();
                             tareaUsuario.Descripcion = parametros.Descripcion;
-                            tareaUsuario.Estado = true;//revisar
+
+                            switch (parametros.Estado)
+                            {
+                                case Estados.finalizada:
+                                    tareaUsuario.Estado = true;
+                                    break;
+                                case Estados.pendiente:
+                                    tareaUsuario.Estado = false;
+                                    break;
+                                case Estados.sinespecificar:
+                                    tareaUsuario.Estado = false;
+                                    break;
+                                default:
+                                    break;
+                            }
                             tareaUsuario.FechaCreacion = DateTime.Now;
                             tareaUsuario.FechaActualizacion = DateTime.Now;
-                            tareaUsuario.FechaVencimieno = DateTime.Now;//revisar
+                            tareaUsuario.FechaVencimieno = Convert.ToDateTime(parametros.FechaVencimiento);
                             tareaUsuario.IdUsuario = IdUsuario;
                             db.TabTareaUsuario.Add(tareaUsuario);
                             db.SaveChanges();
@@ -130,6 +139,10 @@ namespace CI2.Web.Controllers
                     }
 
                 }
+                else
+                {
+                    throw new InvalidExpressionException();
+                }
             }
             catch (Exception ex)
             {
@@ -138,85 +151,138 @@ namespace CI2.Web.Controllers
             return CrearResultadoViewModel;
         }
 
-
-        // GET: api/Tareas/5
-        [ResponseType(typeof(TabTareaUsuario))]
-        public IHttpActionResult GetTabTareaUsuario(long id)
+        [HttpPost]
+        [Route("actualizar")]
+        public ActualizarResultadoViewModel Actualizar([FromBody]ActualizarParametrosViewModel parametros)
         {
-            TabTareaUsuario tabTareaUsuario = db.TabTareaUsuario.Find(id);
-            if (tabTareaUsuario == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(tabTareaUsuario);
-        }
-
-        // PUT: api/Tareas/5
-        [ResponseType(typeof(void))]
-        public IHttpActionResult PutTabTareaUsuario(long id, TabTareaUsuario tabTareaUsuario)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            if (id != tabTareaUsuario.IdTarea)
-            {
-                return BadRequest();
-            }
-
-            db.Entry(tabTareaUsuario).State = EntityState.Modified;
-
+            ActualizarResultadoViewModel ActualizarResultadoViewModel = new ActualizarResultadoViewModel();
             try
             {
-                db.SaveChanges();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!TabTareaUsuarioExists(id))
+                string IdUsuario = "";
+                if (ModelState.IsValid)
                 {
-                    return NotFound();
+                    var nombreUsuarioActual = User.Identity.Name;
+                    if (nombreUsuarioActual != null)
+                    {
+                        IdUsuario = db.TabUsuario.Where(item => item.NombreUsuario == nombreUsuarioActual).Select(item => item.IdUsuario).SingleOrDefault();
+                        if (IdUsuario != "" && parametros.IdTarea != 0)
+                        {
+                            TabTareaUsuario tareaUsuarioCreador = db.TabTareaUsuario.Where(item => item.IdUsuario == IdUsuario && item.IdTarea == parametros.IdTarea).SingleOrDefault();
+
+                            if (tareaUsuarioCreador != null)
+                            {
+                                TabTareaUsuario tareaUsuario = new TabTareaUsuario();
+                                if (!string.IsNullOrEmpty(parametros.Descripcion))
+                                {
+                                    tareaUsuarioCreador.Descripcion = parametros.Descripcion;
+                                }
+
+                                if (!string.IsNullOrWhiteSpace(parametros.FechaVencimiento))
+                                {
+                                    tareaUsuarioCreador.FechaVencimieno = Convert.ToDateTime(parametros.FechaVencimiento);
+                                }
+                                if (parametros.Estado != null)
+                                {
+                                    switch (parametros.Estado)
+                                    {
+                                        case Estados.finalizada:
+                                            tareaUsuario.Estado = true;
+                                            break;
+                                        case Estados.pendiente:
+                                            tareaUsuario.Estado = false;
+                                            break;
+                                        case Estados.sinespecificar:
+                                            tareaUsuario.Estado = false;
+                                            break;
+                                        default:
+                                            break;
+                                    }
+                                }
+                                tareaUsuarioCreador.FechaActualizacion = DateTime.Now;
+                                db.TabTareaUsuario.Attach(tareaUsuarioCreador);
+                                db.Entry(tareaUsuarioCreador).State = EntityState.Modified;
+                                db.SaveChanges();
+                                ActualizarResultadoViewModel.IdTarea = tareaUsuarioCreador.IdTarea;
+                                ActualizarResultadoViewModel.Descripcion = tareaUsuarioCreador.Descripcion;
+                                ActualizarResultadoViewModel.Estado = tareaUsuarioCreador.Estado;
+                                ActualizarResultadoViewModel.FechaActualizacion = tareaUsuarioCreador.FechaActualizacion;
+                                ActualizarResultadoViewModel.FechaCreacion = tareaUsuarioCreador.FechaCreacion;
+                                ActualizarResultadoViewModel.FechaVencimiento = tareaUsuarioCreador.FechaVencimieno;
+                                ActualizarResultadoViewModel.IdUsuario = tareaUsuarioCreador.IdUsuario;
+                            }
+                            else
+                            {
+                                throw new UnauthorizedAccessException();
+                            }
+                        }
+                    }
+                    else
+                    {
+                        throw new UnauthorizedAccessException();
+                    }
+
                 }
                 else
                 {
-                    throw;
+                    throw new InvalidExpressionException();
                 }
             }
-
-            return StatusCode(HttpStatusCode.NoContent);
-        }
-
-        // POST: api/Tareas
-        [ResponseType(typeof(TabTareaUsuario))]
-        public IHttpActionResult PostTabTareaUsuario(TabTareaUsuario tabTareaUsuario)
-        {
-            if (!ModelState.IsValid)
+            catch (Exception ex)
             {
-                return BadRequest(ModelState);
+                throw;
             }
-
-            db.TabTareaUsuario.Add(tabTareaUsuario);
-            db.SaveChanges();
-
-            return CreatedAtRoute("DefaultApi", new { id = tabTareaUsuario.IdTarea }, tabTareaUsuario);
+            return ActualizarResultadoViewModel;
         }
 
-        // DELETE: api/Tareas/5
-        [ResponseType(typeof(TabTareaUsuario))]
-        public IHttpActionResult DeleteTabTareaUsuario(long id)
+        [HttpPost]
+        [Route("borrar")]
+        public BorrarResultadoViewModel Borrar([FromBody]BorrarParametrosViewModel parametros)
         {
-            TabTareaUsuario tabTareaUsuario = db.TabTareaUsuario.Find(id);
-            if (tabTareaUsuario == null)
+            BorrarResultadoViewModel BorrarResultadoViewModel = new BorrarResultadoViewModel();
+            try
             {
-                return NotFound();
+                string IdUsuario = "";
+                if (ModelState.IsValid)
+                {
+                    var nombreUsuarioActual = User.Identity.Name;
+                    if (nombreUsuarioActual != null)
+                    {
+                        IdUsuario = db.TabUsuario.Where(item => item.NombreUsuario == nombreUsuarioActual).Select(item => item.IdUsuario).SingleOrDefault();
+                        if (IdUsuario != "")
+                        {
+                            TabTareaUsuario tareaUsuarioCreador = db.TabTareaUsuario.Where(item => item.IdTarea == parametros.IdTarea).SingleOrDefault();
+
+                            if (tareaUsuarioCreador != null)
+                            {
+                                db.TabTareaUsuario.Attach(tareaUsuarioCreador);
+                                db.TabTareaUsuario.Remove(tareaUsuarioCreador);
+                                db.SaveChanges();
+                            }
+                            else
+                            {
+                                throw new UnauthorizedAccessException();
+                            }
+                        }
+                    }
+                    else
+                    {
+                        throw new UnauthorizedAccessException();
+                    }
+
+                }
+                else
+                {
+                    throw new InvalidExpressionException();
+                }
             }
-
-            db.TabTareaUsuario.Remove(tabTareaUsuario);
-            db.SaveChanges();
-
-            return Ok(tabTareaUsuario);
+            catch (Exception ex)
+            {
+                throw;
+            }
+            return BorrarResultadoViewModel;
         }
+
+
 
         protected override void Dispose(bool disposing)
         {

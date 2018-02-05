@@ -73,25 +73,31 @@ namespace CI2.Web.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    TabUsuario Usuario = new TabUsuario();
-                    Usuario.Contrasena = GenerardorPassword();
-                    Usuario.Correo = usuarioViewModel.Correo;
-                    Usuario.NombreUsuario = usuarioViewModel.NombreUsuario;
+                    TabUsuario usuario = new TabUsuario();
+                    usuario.Contrasena = GenerardorPassword();
+                    usuario.Correo = usuarioViewModel.Correo;
+                    usuario.NombreUsuario = usuarioViewModel.NombreUsuario;
+                    usuario.Telefono = usuarioViewModel.Telefono;
+                    usuario.CorreoConfirmacion = usuarioViewModel.CorreoConfirmacion;
+                    usuario.TelefonoConfirmacion = usuarioViewModel.TelefonoConfirmacion;
+                    usuario.Bloqueo = usuarioViewModel.Bloqueo;
                     var manager = System.Web.HttpContext.Current.GetOwinContext().GetUserManager<ApplicationUserManager>();
-                    var usuarioIdentity = new ApplicationUser() { UserName = Usuario.NombreUsuario, Email = Usuario.Correo };
-                    var resultadoOperacion = manager.Create(usuarioIdentity, Usuario.Contrasena);
+                    var usuarioIdentity = new ApplicationUser() { UserName = usuario.NombreUsuario, Email = usuario.Correo, PhoneNumber=usuario.Telefono, EmailConfirmed= usuario.CorreoConfirmacion, PhoneNumberConfirmed=usuario.TelefonoConfirmacion, LockoutEnabled=usuario.Bloqueo};
+                    var resultadoOperacion = manager.Create(usuarioIdentity, usuario.Contrasena);
                     if (resultadoOperacion.Succeeded)
                     {
                         TabUsuarioRol usuarioRol = new TabUsuarioRol();
                         usuarioRol.IdRol = usuarioViewModel.IdRol;
-                        usuarioRol.IdUsuario = Usuario.IdUsuario;
-                        usuarioRol.IdentityUser_Id = Usuario.IdUsuario;
+                        usuarioRol.IdUsuario = usuarioIdentity.Id;
+                        usuarioRol.IdentityUser_Id = usuarioIdentity.Id;
                         db.TabUsuarioRol.Add(usuarioRol);
                         db.SaveChanges();
                         return RedirectToAction("Index");
                     }
                     else
                     {
+                        ModelState.AddModelError("Correo","El Correo o el nombre de usuario ya existe");
+                        ViewBag.IdRol = new SelectList(db.TabRol.ToList(), "IdRol", "NombreRol");
                         return View(usuarioViewModel);
                     }
                 }
@@ -102,7 +108,7 @@ namespace CI2.Web.Controllers
 
                 throw;
             }
-
+            ViewBag.IdRol = new SelectList(db.TabRol.ToList(), "IdRol", "NombreRol", usuarioViewModel.IdRol);
             return View(usuarioViewModel);
         }
 
@@ -167,6 +173,9 @@ namespace CI2.Web.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Edit(UsuarioViewModel usuarioViewModel)
         {
+            Boolean crearTransaccion = db.Database.CurrentTransaction == null;
+            var transaccion = crearTransaccion ? db.Database.BeginTransaction() : db.Database.CurrentTransaction;
+            string IdRol = "";
             try
             {
                 if (ModelState.IsValid)
@@ -188,8 +197,14 @@ namespace CI2.Web.Controllers
                         {
                             TabUsuarioRol usuarioRol = new TabUsuarioRol();
                             usuarioRolTemp.IdRol = usuarioViewModel.IdRol;
+                            IdRol=usuarioRol.IdRol;
                             db.Entry(usuarioRolTemp).State = EntityState.Modified;
                             db.SaveChanges();
+                        }
+                        if (crearTransaccion)
+                        {
+                            db.SaveChanges();
+                            transaccion.Commit();
                         }
                         return RedirectToAction("Index");
                     }
@@ -199,8 +214,19 @@ namespace CI2.Web.Controllers
             }
             catch (Exception ex)
             {
-
+                if (crearTransaccion && transaccion != null)
+                {
+                    transaccion.Rollback();
+                    ViewBag.IdRol = new SelectList(db.TabRol.ToList(), "IdRol", "NombreRol", IdRol);
+                }
                 throw;
+            }
+            finally
+            {
+                if (crearTransaccion)
+                {
+                    if (transaccion != null) ((IDisposable)transaccion).Dispose();
+                }
             }
 
             return View(usuarioViewModel);
@@ -209,32 +235,40 @@ namespace CI2.Web.Controllers
         // GET: Usuarios/Delete/5
         public ActionResult Delete(string id)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
             UsuarioViewModel usuario = new UsuarioViewModel();
-            var usuarioExiste = (from us in db.TabUsuario
-                                 join ur in db.TabUsuarioRol on us.IdUsuario equals ur.IdentityUser_Id
-                                 where us.IdUsuario == id
-                                 select new { ur, us }).SingleOrDefault();
+            try
+            {
+                if (id == null)
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                }
 
-            if (usuarioExiste == null)
-            {
-                return HttpNotFound();
+                var usuarioExiste = (from us in db.TabUsuario
+                                     join ur in db.TabUsuarioRol on us.IdUsuario equals ur.IdentityUser_Id
+                                     where us.IdUsuario == id
+                                     select new { ur, us }).SingleOrDefault();
+
+                if (usuarioExiste == null)
+                {
+                    return HttpNotFound();
+                }
+                else
+                {
+                    usuario.NombreRol = (from rl in db.TabRol
+                                         where rl.IdRol == usuarioExiste.ur.IdRol
+                                         select rl.NombreRol).SingleOrDefault();
+                    usuario.IdUsuario = usuarioExiste.us.IdUsuario;
+                    usuario.NombreUsuario = usuarioExiste.us.NombreUsuario;
+                    usuario.Telefono = usuarioExiste.us.Telefono;
+                    usuario.TelefonoConfirmacion = usuarioExiste.us.TelefonoConfirmacion;
+                    usuario.Bloqueo = usuarioExiste.us.Bloqueo;
+                    usuario.Correo = usuarioExiste.us.Correo;
+                    usuario.CorreoConfirmacion = usuarioExiste.us.CorreoConfirmacion;
+                }
             }
-            else
+            catch (Exception ex)
             {
-                usuario.NombreRol = (from rl in db.TabRol
-                                     where rl.IdRol == usuarioExiste.ur.IdRol
-                                     select rl.NombreRol).SingleOrDefault();
-                usuario.IdUsuario = usuarioExiste.us.IdUsuario;
-                usuario.NombreUsuario = usuarioExiste.us.NombreUsuario;
-                usuario.Telefono = usuarioExiste.us.Telefono;
-                usuario.TelefonoConfirmacion = usuarioExiste.us.TelefonoConfirmacion;
-                usuario.Bloqueo = usuarioExiste.us.Bloqueo;
-                usuario.Correo = usuarioExiste.us.Correo;
-                usuario.CorreoConfirmacion = usuarioExiste.us.CorreoConfirmacion;
+                throw;
             }
             return View(usuario);
         }
@@ -242,28 +276,51 @@ namespace CI2.Web.Controllers
         // POST: Usuarios/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(UsuarioViewModel usuarioViewModel)
+        public ActionResult DeleteConfirmed(string id)
         {
-            var usuarioExiste = (from us in db.TabUsuario
-                                 join ur in db.TabUsuarioRol on us.IdUsuario equals ur.IdentityUser_Id
-                                 where us.IdUsuario == usuarioViewModel.IdUsuario
-                                 select new { ur, us }).SingleOrDefault();
+            Boolean crearTransaccion = db.Database.CurrentTransaction == null;
+            var transaccion = crearTransaccion ? db.Database.BeginTransaction() : db.Database.CurrentTransaction;
 
-            if (usuarioExiste != null)
+            try
             {
-                TabUsuarioRol usuarioRol = new TabUsuarioRol();
-                usuarioRol.IdUsuario = usuarioViewModel.IdUsuario;
-                TabUsuario usuarioTemp = new TabUsuario();
-                usuarioTemp.IdUsuario = usuarioViewModel.IdUsuario;
-                db.TabUsuarioRol.Remove(usuarioRol);
-                db.TabUsuario.Remove(usuarioTemp);
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                TabUsuario usuario = db.TabUsuario.Find(id);
+                TabUsuarioRol usuarioRol = db.TabUsuarioRol.Where(item => item.IdUsuario == id).SingleOrDefault();
+                if (usuario != null && usuarioRol != null)
+                {
+                    db.TabUsuarioRol.Attach(usuarioRol);
+                    db.TabUsuarioRol.Remove(usuarioRol);
+                    db.TabUsuario.Attach(usuario);
+                    db.TabUsuario.Remove(usuario);
+                    db.SaveChanges();
+                    if (crearTransaccion)
+                    {
+                        db.SaveChanges();
+                        transaccion.Commit();
+                    }
+                    return RedirectToAction("Index");
+                }
+                else
+                {
+                    return View(id);
+                }
             }
-            else
+
+            catch (Exception ex)
             {
-                return View(usuarioViewModel);
+                if (crearTransaccion && transaccion != null)
+                {
+                    transaccion.Rollback();
+                }
+                throw;
             }
+            finally
+            {
+                if (crearTransaccion)
+                {
+                    if (transaccion != null) ((IDisposable)transaccion).Dispose();
+                }
+            }
+            return View(id);
         }
 
         protected override void Dispose(bool disposing)
