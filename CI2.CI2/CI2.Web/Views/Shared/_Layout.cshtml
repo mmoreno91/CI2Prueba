@@ -23,15 +23,15 @@
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
-                    <li>@Html.ActionLink("Inicio", "Index", "Home")</li>
+                    <li>@Html.ActionLink("Inicio", "Index", "Home", new { area = "" }, null)</li>
 
                     @if (Request.IsAuthenticated)
                     {
-                        <li>@Html.ActionLink("Usuarios", "Index", "Usuarios")</li>
-                        <li>@Html.ActionLink("Servicio Web", "Index", "Help")</li>
+                        <li>@Html.ActionLink("Usuarios", "Index", "Usuarios", new { area = "" },null)</li>
+                        <li>@Html.ActionLink("Servicio Web Web API", "Index", "Help", new { area = "HelpPage" }, null)</li>
+                        <li>@Html.ActionLink("Servicio Web Swagger","","Swagger", new { area = "" }, null)</li>
                     }
-                    <li>@Html.ActionLink("Acerca de", "About", "Home")</li>
-                    <li>@Html.ActionLink("Contacto", "Contact", "Home")</li>
+                    <li>@Html.ActionLink("Acerca de", "About", "Home", new { area = "" }, null)</li>
                 </ul>
                 @Html.Partial("_LoginPartial")
             </div>

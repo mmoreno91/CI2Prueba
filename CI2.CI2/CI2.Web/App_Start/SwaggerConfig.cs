@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using CI2.Web;
 using Swagger.Net.Application;
 using Swagger.Net;
-
+using Swagger;
 [assembly: PreApplicationStartMethod(typeof(SwaggerConfig), "Register")]
 
 namespace CI2.Web
@@ -39,7 +39,7 @@ namespace CI2.Web
                         // hold additional metadata for an API. Version and title are required but you can also provide
                         // additional fields by chaining methods off SingleApiVersion.
                         //
-                        c.SingleApiVersion("v1", "CI2.Web");
+                        c.SingleApiVersion("v1", "CI2 Servicio Web");
 
                         // Taking to long to load the swagger docs? Enable this option to start caching it
                         //
@@ -284,6 +284,7 @@ namespace CI2.Web
                         //    //additionalQueryStringParams: new Dictionary<string, string>() { { "foo", "bar" } }
                         //);
                     });
+            
         }
 
         public static bool ResolveVersionSupportByRouteConstraint(ApiDescription apiDesc, string targetApiVersion)
