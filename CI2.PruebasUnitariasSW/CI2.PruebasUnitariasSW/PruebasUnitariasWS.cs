@@ -92,125 +92,78 @@ namespace CI2.PruebasUnitariasSW
             return token;
         }
 
-        [TestMethod]
-        public void TestWSConsultarTareas_SinCredenciales()
-        {
-            try
-            {
-                using (var cliente = new WebClient())
-                {
-                    var url = "http://localhost:52788/api/tareas/consultar";
-                    var resultado = cliente.DownloadString(url);
-                    Assert.IsTrue(!string.IsNullOrWhiteSpace(resultado) && resultado.Contains("<html>"));
-                }
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }
-        }
+
 
         [TestMethod]
         public void TestWSConsultarTareas_ConCredenciales()
         {
-            try
+            string token = WSObtenerToken();
+            //Llamar Ws con token
+            using (var cliente = new WebClient())
             {
-                string token = WSObtenerToken();
-                //Llamar Ws con token
-                using (var cliente = new WebClient())
-                {
-                    var url = "http://localhost:52788/api/tareas/consultar?IdUsuario='9be6e696-0596-46e3-8f58-41926228c1ab'";
-                    cliente.Headers.Add("Authorization", "Bearer " + token);
-                    var resultado = cliente.DownloadString(url);
-                    Assert.IsTrue(!string.IsNullOrWhiteSpace(resultado) && !resultado.Contains("<html>"));
-                }
-
-            }
-            catch (Exception ex)
-            {
-                throw;
+                var url = "http://localhost:52788/api/tareas/consultar?IdUsuario='9be6e696-0596-46e3-8f58-41926228c1ab'";
+                cliente.Headers.Add("Authorization", "Bearer " + token);
+                var resultado = cliente.DownloadString(url);
+                var respuesta = Newtonsoft.Json.JsonConvert.DeserializeObject<IEnumerable<ResultadoWSCrear>>(resultado);
+                Assert.AreNotEqual(respuesta, null);
             }
         }
 
         [TestMethod]
         public void TestWSCrearTareas_ConCredenciales()
         {
-            try
+            string token = WSObtenerToken();
+            //Llamar Ws con token
+            using (var cliente = new WebClient())
             {
-                string token = WSObtenerToken();
-                //Llamar Ws con token
-                using (var cliente = new WebClient())
-                {
-                    var url = "http://localhost:52788/api/tareas/crear";
-                    cliente.Headers.Add("Content-Type", "application/x-www-form-urlencoded");
-                    cliente.Headers.Add("Authorization", "Bearer " + token);
-                    string Descripcion = "Ejemplo nueva tarea";
-                    DateTime FechaVencimiento = DateTime.Now;
-                    int Estado = 1;
-                    string resultado = cliente.UploadString(url, "POST", $"descripcion={Descripcion}&estado={Estado}&FechaVencimiento={FechaVencimiento}");
-                    var valores = Newtonsoft.Json.JsonConvert.DeserializeObject<ResultadoWSCrear>(resultado);
-                    Assert.AreNotEqual(valores, null);
-                    Assert.IsTrue(valores.IdTarea > 0);
-                }
-
-            }
-            catch (Exception ex)
-            {
-
-                throw;
+                var url = "http://localhost:52788/api/tareas/crear";
+                cliente.Headers.Add("Content-Type", "application/x-www-form-urlencoded");
+                cliente.Headers.Add("Authorization", "Bearer " + token);
+                string Descripcion = "Ejemplo nueva tarea";
+                DateTime FechaVencimiento = DateTime.Now;
+                int Estado = 1;
+                string resultado = cliente.UploadString(url, "POST", $"descripcion={Descripcion}&estado={Estado}&FechaVencimiento={FechaVencimiento}");
+                var valores = Newtonsoft.Json.JsonConvert.DeserializeObject<ResultadoWSCrear>(resultado);
+                Assert.AreNotEqual(valores, null);
+                Assert.IsTrue(valores.IdTarea > 0);
             }
         }
 
         [TestMethod]
         public void TestWSActualizarTareas_ConCredenciales()
         {
-            try
+            string token = WSObtenerToken();
+            //Llamar Ws con token
+            using (var cliente = new WebClient())
             {
-                string token = WSObtenerToken();
-                //Llamar Ws con token
-                using (var cliente = new WebClient())
-                {
-                    var url = "http://localhost:52788/api/tareas/actualizar";
-                    cliente.Headers.Add("Content-Type", "application/x-www-form-urlencoded");
-                    cliente.Headers.Add("Authorization", "Bearer " + token);
-                    string Descripcion = "Ejemplo descripción nueva";
-                    DateTime FechaVencimiento = DateTime.Now;
-                    int Estado = 1;
-                    Int64 IdTarea = 5;
-                    string resultado = cliente.UploadString(url, "POST", $"IdTarea={IdTarea}&descripcion={Descripcion}&estado={Estado}&FechaVencimiento={FechaVencimiento}");
-                    var valores = Newtonsoft.Json.JsonConvert.DeserializeObject<ResultadoWSActualizar>(resultado);
-                    Assert.AreNotEqual(valores, null);
-                    Assert.IsTrue(valores.IdTarea > 0);
-                }
-            }
-            catch (Exception)
-            {
-
-                throw;
+                var url = "http://localhost:52788/api/tareas/actualizar";
+                cliente.Headers.Add("Content-Type", "application/x-www-form-urlencoded");
+                cliente.Headers.Add("Authorization", "Bearer " + token);
+                string Descripcion = "Ejemplo descripción nueva";
+                DateTime FechaVencimiento = DateTime.Now;
+                int Estado = 1;
+                Int64 IdTarea = 5;
+                string resultado = cliente.UploadString(url, "POST", $"IdTarea={IdTarea}&descripcion={Descripcion}&estado={Estado}&FechaVencimiento={FechaVencimiento}");
+                var valores = Newtonsoft.Json.JsonConvert.DeserializeObject<ResultadoWSActualizar>(resultado);
+                Assert.AreNotEqual(valores, null);
+                Assert.IsTrue(valores.IdTarea > 0);
             }
         }
 
         [TestMethod]
         public void TestWSBorrarTareas_ConCredenciales()
         {
-            try
+            string token = WSObtenerToken();
+            //Llamar Ws con token
+            using (var cliente = new WebClient())
             {
-                string token = WSObtenerToken();
-                //Llamar Ws con token
-                using (var cliente = new WebClient())
-                {
-                    var url = "http://localhost:52788/api/tareas/borrar";
-                    cliente.Headers.Add("Content-Type", "application/x-www-form-urlencoded");
-                    cliente.Headers.Add("Authorization", "Bearer " + token);
-                    Int64 IdTarea = 6;
-                    string resultado = cliente.UploadString(url, "POST", $"IdTarea={IdTarea}");
-                    var valores = Newtonsoft.Json.JsonConvert.DeserializeObject<ResultadoWSBorrar>(resultado);
-                    Assert.AreEqual(valores, null);
-                }
-            }
-            catch (Exception ex)
-            {
-                throw;
+                var url = "http://localhost:52788/api/tareas/borrar";
+                cliente.Headers.Add("Content-Type", "application/x-www-form-urlencoded");
+                cliente.Headers.Add("Authorization", "Bearer " + token);
+                Int64 IdTarea = 6;
+                string resultado = cliente.UploadString(url, "POST", $"IdTarea={IdTarea}");
+                var valores = Newtonsoft.Json.JsonConvert.DeserializeObject<ResultadoWSBorrar>(resultado);
+                Assert.AreEqual(valores, null);
             }
         }
     }

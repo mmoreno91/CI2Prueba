@@ -132,6 +132,10 @@ namespace CI2.Web.Controllers
                             CrearResultadoViewModel.FechaVencimiento = tareaUsuario.FechaVencimieno;
                             CrearResultadoViewModel.IdUsuario = tareaUsuario.IdUsuario;
                         }
+                        else
+                        {
+                            throw new FormatException();
+                        }
                     }
                     else
                     {
@@ -215,6 +219,10 @@ namespace CI2.Web.Controllers
                                 throw new UnauthorizedAccessException();
                             }
                         }
+                        else
+                        {
+                            throw new FormatException();
+                        }
                     }
                     else
                     {
@@ -262,6 +270,10 @@ namespace CI2.Web.Controllers
                             {
                                 throw new UnauthorizedAccessException();
                             }
+                        }
+                        else
+                        {
+                            throw new FormatException();
                         }
                     }
                     else
